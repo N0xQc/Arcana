@@ -1,0 +1,61 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_caster_rune": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "arcana:caster_rune"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_compass": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:compass"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_end_spell_scroll": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "arcana:end_spell_scroll"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:cast_meteorology_scroll"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_end_spell_scroll",
+      "has_caster_rune",
+      "has_compass"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:cast_meteorology_scroll"
+    ]
+  },
+  "sends_telemetry_event": false
+}

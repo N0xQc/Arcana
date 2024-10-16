@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "arcana:magic_spell_scroll"
+    },
+    {
+      "item": "arcana:invoker_rune"
+    },
+    {
+      "item": "minecraft:snow_block"
+    }
+  ],
+  "result": {
+    "item": "arcana:invoke_snow_golem_scroll"
+  }
+}

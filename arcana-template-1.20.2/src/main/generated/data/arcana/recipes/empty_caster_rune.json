@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "item": "arcana:magic_dust"
+    },
+    "S": {
+      "item": "minecraft:stone"
+    }
+  },
+  "pattern": [
+    "S S",
+    " M ",
+    "S S"
+  ],
+  "result": {
+    "item": "arcana:empty_caster_rune"
+  },
+  "show_notification": true
+}

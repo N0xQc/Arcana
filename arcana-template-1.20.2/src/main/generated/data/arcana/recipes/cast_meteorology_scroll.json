@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "arcana:end_spell_scroll"
+    },
+    {
+      "item": "arcana:caster_rune"
+    },
+    {
+      "item": "minecraft:compass"
+    }
+  ],
+  "result": {
+    "item": "arcana:cast_meteorology_scroll"
+  }
+}

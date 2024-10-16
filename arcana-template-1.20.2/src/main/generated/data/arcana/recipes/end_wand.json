@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "arcana:end_wand_core"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "  S",
+    " C ",
+    "S  "
+  ],
+  "result": {
+    "item": "arcana:end_wand"
+  },
+  "show_notification": true
+}

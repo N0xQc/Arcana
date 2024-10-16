@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "arcana:nether_spell_scroll"
+    },
+    {
+      "item": "arcana:caster_rune"
+    },
+    {
+      "item": "minecraft:fire_charge"
+    }
+  ],
+  "result": {
+    "item": "arcana:cast_destruction_scroll"
+  }
+}

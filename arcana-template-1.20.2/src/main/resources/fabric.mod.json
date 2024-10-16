@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "arcana",
+	"version": "${version}",
+	"name": "Arcana",
+	"description": "This is mod adds a magic expansion to Minecraft.",
+	"authors": [
+		"Arnaud Lambert a.k.a. ScribeQc"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/arcana/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.sigmastr.arcana.Arcana"
+		],"client": [
+			"net.sigmastr.arcana.ArcanaClient"
+		],
+		"fabric-datagen": [
+			"net.sigmastr.arcana.ArcanaDataGenerator"
+		]
+	},
+	"mixins": [
+		"arcana.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.3",
+		"minecraft": "~1.20.2",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

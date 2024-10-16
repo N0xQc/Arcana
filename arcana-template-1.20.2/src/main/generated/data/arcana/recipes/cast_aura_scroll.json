@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "arcana:magic_spell_scroll"
+    },
+    {
+      "item": "arcana:caster_rune"
+    },
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    }
+  ],
+  "result": {
+    "item": "arcana:cast_aura_scroll"
+  }
+}

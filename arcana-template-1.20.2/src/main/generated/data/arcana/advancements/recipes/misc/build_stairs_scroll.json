@@ -1,0 +1,61 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_builder_rune": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "arcana:builder_rune"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_magic_spell_scroll": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "arcana:magic_spell_scroll"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_stone_stairs": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:stone_stairs"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:build_stairs_scroll"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_magic_spell_scroll",
+      "has_builder_rune",
+      "has_stone_stairs"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:build_stairs_scroll"
+    ]
+  },
+  "sends_telemetry_event": false
+}

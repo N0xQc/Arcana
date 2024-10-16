@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "arcana:magic_spell_scroll"
+    },
+    {
+      "item": "arcana:builder_rune"
+    },
+    {
+      "item": "minecraft:stone_stairs"
+    }
+  ],
+  "result": {
+    "item": "arcana:build_stairs_scroll"
+  }
+}

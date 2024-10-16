@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "arcana:nether_spell_scroll"
+    },
+    {
+      "item": "arcana:invoker_rune"
+    },
+    {
+      "item": "minecraft:blaze_powder"
+    }
+  ],
+  "result": {
+    "item": "arcana:invoke_blaze_scroll"
+  }
+}
