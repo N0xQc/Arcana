@@ -17,6 +17,7 @@ public class Arcana implements ModInitializer {
 	public void onInitialize() {
 
 		LOGGER.info("Hello Fabric world!");
+		ArcanaEntities.register();
 		ArcanaItems.registerModItems();
 		ArcanaBlocks.registerModBlocks();
 		ArcanaLootTableModifiers.modifyLootTables();

@@ -256,8 +256,6 @@ public class NaturalBlocks {
         } else if (hitblock == Blocks.WARPED_PLANKS) {
             return Blocks.WARPED_STAIRS;
         } else if (hitblock == Blocks.OAK_PLANKS || hitblock == Blocks.OAK_LOG || hitblock == Blocks.OAK_WOOD || hitblock == Blocks.OAK_LEAVES || hitblock == Blocks.STRIPPED_OAK_LOG || hitblock == Blocks.STRIPPED_OAK_WOOD) {
-            PlayerEntity player = MinecraftClient.getInstance().player;
-            player.sendMessage(Text.of("Oak stairs"), false);
             return Blocks.OAK_STAIRS;
         } else if (hitblock == Blocks.BIRCH_PLANKS || hitblock == Blocks.BIRCH_LOG || hitblock == Blocks.BIRCH_WOOD || hitblock == Blocks.BIRCH_LEAVES || hitblock == Blocks.STRIPPED_BIRCH_LOG || hitblock == Blocks.STRIPPED_BIRCH_WOOD) {
             return Blocks.BIRCH_STAIRS;
@@ -274,8 +272,6 @@ public class NaturalBlocks {
         } else if (hitblock == Blocks.CHERRY_PLANKS || hitblock == Blocks.CHERRY_LOG || hitblock == Blocks.CHERRY_WOOD || hitblock == Blocks.CHERRY_LEAVES || hitblock == Blocks.STRIPPED_CHERRY_LOG || hitblock == Blocks.STRIPPED_CHERRY_WOOD) {
             return Blocks.CHERRY_STAIRS;
         } else {
-            PlayerEntity player = MinecraftClient.getInstance().player;
-            player.sendMessage(Text.of("No stairs for this block"), false);
             return Blocks.AIR;
         }
     }

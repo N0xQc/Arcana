@@ -11,9 +11,15 @@ import net.sigmastr.arcana.Arcana;
 import net.sigmastr.arcana.entity.custom.MagicSpellProjectileEntity;
 
 public class ArcanaEntities {
-    public static final EntityType<MagicSpellProjectileEntity> MAGIC_SPELL_PROJECTILE = Registry.register(Registries.ENTITY_TYPE,
-            new Identifier(Arcana.MOD_ID, "magic_spell_projectile"),
-            FabricEntityTypeBuilder.<MagicSpellProjectileEntity>create(SpawnGroup.MISC, MagicSpellProjectileEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.1F, 0.1F)).build());
+    public static final EntityType<MagicSpellProjectileEntity> MAGIC_SPELL_PROJECTILE = FabricEntityTypeBuilder
+            .<MagicSpellProjectileEntity>create(SpawnGroup.MISC, MagicSpellProjectileEntity::new)
+            .dimensions(EntityDimensions.fixed(0.1F, 0.1F))
+            .trackRangeBlocks(64)
+            .trackedUpdateRate(1)
+            .build();
 
+    public static void register() {
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(Arcana.MOD_ID, "magic_spell_projectile"), MAGIC_SPELL_PROJECTILE);
+    }
 }
+

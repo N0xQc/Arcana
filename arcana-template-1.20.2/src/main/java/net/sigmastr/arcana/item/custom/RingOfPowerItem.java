@@ -9,6 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class RingOfPowerItem extends Item {
     public RingOfPowerItem(FabricItemSettings fabricItemSettings) {
@@ -21,6 +23,11 @@ public class RingOfPowerItem extends Item {
     @Override
     public boolean hasGlint(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        return Text.literal("Ring of Power").formatted(Formatting.GOLD);
     }
 
     // This method will be called every server tick

@@ -108,7 +108,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                 if (NaturalBlocks.isNatural(hitBlock)) {
                     String direction = wand == ArcanaItems.MAGIC_WAND ? MagicWandItem.getDirection() : ElderWandItem.getDirection();
                     int size = wand == ArcanaItems.MAGIC_WAND ? 10 : 20;
-                    boolean sneaking = player.isInSneakingPose();
+                    boolean sneaking = serverPlayer.isInSneakingPose();
                     int sneakOffset = sneaking ? 2 : 1;
                     BridgeBuilder bridgeBuilder = new BridgeBuilder(serverWorld, getBlockPos().down(sneakOffset), direction, hitBlock, size, wand, sneaking); // Adjust length as needed
                     bridgeBuilder.startBuilding();
@@ -126,7 +126,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.BUILD_BRIDGE_SCROLL) {
                 if (NaturalBlocks.isNatural(hitBlock)) {
                     String direction = wand == ArcanaItems.END_WAND ? EndWandItem.getDirection() : NetherWandItem.getDirection();
-                    boolean sneaking = player.isInSneakingPose();
+                    boolean sneaking = serverPlayer.isInSneakingPose();
                     int sneakOffset = sneaking ? 2 : 1;
                     BridgeBuilder bridgeBuilder = new BridgeBuilder(serverWorld, getBlockPos().down(sneakOffset), direction, hitBlock, 10, wand, sneaking); // Adjust length as needed
                     bridgeBuilder.startBuilding();
@@ -255,7 +255,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                 if (NaturalBlocks.isNatural(hitBlock)) {
                     String direction = wand == ArcanaItems.MAGIC_WAND ? MagicWandItem.getDirection() : ElderWandItem.getDirection();
                     int size = wand == ArcanaItems.MAGIC_WAND ? 10 : 20;
-                    boolean sneaking = player.isInSneakingPose();
+                    boolean sneaking = serverPlayer.isInSneakingPose();
                     Block targetBlock = NaturalBlocks.isStairs(hitBlock) ? hitBlock : NaturalBlocks.getStairsWithBlock(hitBlock);
                     StairsBuilder stairsBuilder = new StairsBuilder(serverWorld, getBlockPos().down(2), direction, targetBlock, size, wand, sneaking); // Adjust length as needed
                     stairsBuilder.startBuilding();
@@ -273,7 +273,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.BUILD_STAIRS_SCROLL) {
                 if (NaturalBlocks.isNatural(hitBlock)) {
                     String direction = wand == ArcanaItems.END_WAND ? EndWandItem.getDirection() : NetherWandItem.getDirection();
-                    boolean sneaking = player.isInSneakingPose();
+                    boolean sneaking = serverPlayer.isInSneakingPose();
                     Block targetBlock = NaturalBlocks.isStairs(hitBlock) ? hitBlock : NaturalBlocks.getStairsWithBlock(hitBlock);
                     StairsBuilder stairsBuilder = new StairsBuilder(serverWorld, getBlockPos().down(2), direction, targetBlock, 10, wand, sneaking); // Adjust length as needed
                     stairsBuilder.startBuilding();
@@ -346,7 +346,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                 if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
                         hitResult.getType() == HitResult.Type.ENTITY) {
                     for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(10.0D), entity -> entity != this)) {
-                        if (entity instanceof LivingEntity && entity != player) {
+                        if (entity instanceof LivingEntity && entity != serverPlayer) {
                             entity.kill();
                         }
                     }
@@ -359,7 +359,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_ANNIHILATION_SCROLL) {
                 if (hitResult instanceof EntityHitResult entityHitResult) {
                     Entity target = entityHitResult.getEntity();
-                    if (target instanceof LivingEntity && target != player) {
+                    if (target instanceof LivingEntity && target != serverPlayer) {
                         target.kill();
                     }
                 }
@@ -409,7 +409,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                     BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
                     BloomBuilder bloomBuilder = new BloomBuilder(serverWorld, hitPos, size); // Default radius for 5x5 area
 
-                    if (player.isSneaking()) {
+                    if (serverPlayer.isSneaking()) {
                         // Plant and grow a tree at the target location
                         bloomBuilder.plantAndGrowTree();
                     } else {
@@ -436,7 +436,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                     BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
                     BloomBuilder bloomBuilder = new BloomBuilder(serverWorld, hitPos, 1);
 
-                    if (player.isSneaking()) {
+                    if (serverPlayer.isSneaking()) {
                         // Plant and grow a tree at the target location
                         bloomBuilder.plantAndGrowTree();
                     } else {
@@ -618,17 +618,17 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                 //player.sendMessage(Text.of("Teleporting...1"));
                 if (player instanceof ServerPlayerEntity serverPlayerEntity) {
                     if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.getWorld() == this.getWorld() && !serverPlayerEntity.isSleeping()) {
-                        if (player.hasVehicle()) {
+                        if (serverPlayer.hasVehicle()) {
                             serverPlayerEntity.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ());
                         } else {
-                            player.requestTeleport(this.getX(), this.getY(), this.getZ());
+                            serverPlayer.requestTeleport(this.getX(), this.getY(), this.getZ());
                         }
-                        player.onLanding();
-                        player.damage(this.getDamageSources().fall(), 5.0f);
+                        serverPlayer.onLanding();
+                        serverPlayer.damage(this.getDamageSources().fall(), 5.0f);
                     }
-                } else if (player != null) {
-                    player.requestTeleport(this.getX(), this.getY(), this.getZ());
-                    player.onLanding();
+                } else if (serverPlayer != null) {
+                    serverPlayer.requestTeleport(this.getX(), this.getY(), this.getZ());
+                    serverPlayer.onLanding();
                 }
                 this.discard();
 
@@ -662,7 +662,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                             serverWorld.playSound(null, hitPos, SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
                         }
                     }
-                    ((LivingEntity) player).addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 2));
+                    ((LivingEntity) serverPlayer).addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 2));
                 }
 
                 ElderWandItem.setCast(true);

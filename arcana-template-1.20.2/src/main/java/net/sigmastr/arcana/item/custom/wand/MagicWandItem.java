@@ -11,6 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.sigmastr.arcana.entity.custom.MagicSpellProjectileEntity;
 import net.sigmastr.arcana.item.ArcanaItems;
 
@@ -300,6 +301,11 @@ public class MagicWandItem extends Item {
     @Override
     public boolean hasGlint(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        return Text.literal("Magic Wand").formatted(Formatting.AQUA);
     }
 
     public static boolean getCast() {
