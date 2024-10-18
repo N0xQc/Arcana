@@ -1,24 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_netherite_ring": {
+    "has_netherite_ingot": {
       "conditions": {
         "items": [
           {
             "items": [
-              "arcana:netherite_ring"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_soul_gem": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "arcana:soul_gem"
+              "minecraft:netherite_ingot"
             ]
           }
         ]
@@ -27,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:empty_ring_of_power"
+        "recipe": "minecraft:netherite_ring"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -35,13 +23,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_soul_gem",
-      "has_netherite_ring"
+      "has_netherite_ingot"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:empty_ring_of_power"
+      "minecraft:netherite_ring"
     ]
   },
   "sends_telemetry_event": false

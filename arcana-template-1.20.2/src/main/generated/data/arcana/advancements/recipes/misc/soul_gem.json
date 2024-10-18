@@ -1,24 +1,24 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_netherite_ring": {
+    "has_echo_shard": {
       "conditions": {
         "items": [
           {
             "items": [
-              "arcana:netherite_ring"
+              "minecraft:echo_shard"
             ]
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_soul_gem": {
+    "has_nether_star": {
       "conditions": {
         "items": [
           {
             "items": [
-              "arcana:soul_gem"
+              "minecraft:nether_star"
             ]
           }
         ]
@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:empty_ring_of_power"
+        "recipe": "minecraft:soul_gem"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -35,13 +35,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_soul_gem",
-      "has_netherite_ring"
+      "has_echo_shard",
+      "has_nether_star"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:empty_ring_of_power"
+      "minecraft:soul_gem"
     ]
   },
   "sends_telemetry_event": false

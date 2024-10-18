@@ -1,4 +1,4 @@
-// 1.20.2	2024-10-15T22:38:02.261291	Arcana/Model Definitions
+// 1.20.2	2024-10-17T16:19:16.1849897	Arcana/Model Definitions
 fe401cc632516601894560f9c9374be0af959393 assets\arcana\models\item\invoke_wolf_scroll.json
 ee44de5539300ac6bc4a5b66e8d7f7ee87d8968c assets\arcana\models\item\invoke_snow_golem_scroll.json
 c8fb91ca2b7f521dbc1cbd693adac83383a1625c assets\arcana\models\item\cast_wrath_scroll.json
@@ -15,6 +15,7 @@ a185d5f96102343bc6c169e53aba30363f1954f5 assets\arcana\models\item\cast_annihila
 1e897dee8e29adf6845435a578496e3268bf3e9c assets\arcana\models\item\caster_rune.json
 3e350db1332f0515592cd53f02e13a9eeb0c78ce assets\arcana\models\item\elder_wand.json
 14349c05f95e7b2c2792148fd68cefcef428c0f7 assets\arcana\models\item\empty_caster_rune.json
+c4a026410e9311ef81dce66642bee6404937274d assets\arcana\models\item\soul_gem.json
 1c94234c5fef612d3afaf3965de132bbcf87f71e assets\arcana\models\item\cast_vacuum_scroll.json
 8434daf508b29b3b9cdc34676c1721f004171ffd assets\arcana\models\item\empty_invoker_rune.json
 9ddcf3b097d2861059cbd3b7eafc13a9bc68a1e9 assets\arcana\models\item\cast_aura_scroll.json
@@ -41,6 +42,7 @@ a847cfa7609abef3f6443d494dbf31e5295c6d4e assets\arcana\models\item\nether_wand.j
 1f504e7fc56e529cc7719fb2c29c618e97a1aaab assets\arcana\models\item\cast_destruction_scroll.json
 51f792aef35d962b3fb3ae1edc5ba8f01b698d35 assets\arcana\models\item\magic_wand_core.json
 8378d53267743e4b58e5553d3baebebbbfdb65be assets\arcana\models\item\build_pillar_scroll.json
+3a35d3867b21eb20db9bc027ca7cb57ba3204441 assets\arcana\models\item\netherite_ring.json
 a1bda2b0dbf6168c63720ff532f108044c6b51c7 assets\arcana\models\item\builder_rune.json
 1366a0aa70700302fa805afd252ceebf567db214 assets\arcana\models\item\end_wand.json
 8fd819c6a18c5881fe67ca7b63af5d83ec5f1083 assets\arcana\models\item\magic_spell_scroll.json

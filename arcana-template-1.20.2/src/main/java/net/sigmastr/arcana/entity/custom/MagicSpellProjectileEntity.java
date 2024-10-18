@@ -97,9 +97,8 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             ServerWorld serverWorld = (ServerWorld) this.getWorld();
             BlockState hitBlockState = serverWorld.getBlockState(blockHitResult.getBlockPos());
             Block hitBlock = hitBlockState.getBlock();
-            for (int i = 0; i < 5; ++i) {
-                serverWorld.spawnParticles(ParticleTypes.FIREWORK, (double)getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY() + getWorld().random.nextDouble(), (double)getBlockPos().getZ() + getWorld().random.nextDouble(), 1, 0.0, 0.0, 0.0, 1.0);
-            }
+            serverWorld.spawnParticles(ParticleTypes.ENCHANT, (double)getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY() + getWorld().random.nextDouble(), (double)getBlockPos().getZ() + getWorld().random.nextDouble(), 500, 0.0, 0.0, 0.0, 1.0);
+
 
             // [SPELLS]
             // BUILD BRIDGE (magic)
@@ -333,15 +332,15 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             ServerWorld serverWorld = (ServerWorld) this.getWorld();
             BlockState hitBlockState = serverWorld.getBlockState(getBlockPos());
             Block hitBlock = hitBlockState.getBlock();
-            for (int i = 0; i < 5; ++i) {
-                serverWorld.spawnParticles(ParticleTypes.FIREWORK, (double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY() + getWorld().random.nextDouble(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 1, 0.0, 0.0, 0.0, 1.0);
-            }
+            serverWorld.spawnParticles(ParticleTypes.ENCHANT, (double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY() + getWorld().random.nextDouble(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 500, 0.0, 0.0, 0.0, 1.0);
+
 
             // [SPELLS]
             // [CAST SPELLS]
             // CAST ANNIHILATION (elder)
             // Greater version of the spell (Instantly kills all entities in a 10 block radius)
             if ((wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_ANNIHILATION_SCROLL) {
+                serverWorld.playSound(null, getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
                 // This condition checks for a non-air block or an entity hit
                 if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
                         hitResult.getType() == HitResult.Type.ENTITY) {
@@ -357,6 +356,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             }
             // Lesser version of the spell (Instantly kills the target entity)
             else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_ANNIHILATION_SCROLL) {
+                serverWorld.playSound(null, getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
                 if (hitResult instanceof EntityHitResult entityHitResult) {
                     Entity target = entityHitResult.getEntity();
                     if (target instanceof LivingEntity && target != serverPlayer) {
@@ -377,6 +377,8 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             // CAST AURA (magic)
             // Greater version of the spell (Gives the entities near the targeted block have extra hearts and resistance for 30 seconds)
             if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_AURA_SCROLL) {
+                serverWorld.playSound(null, getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                serverWorld.spawnParticles(ParticleTypes.GLOW, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                 if (hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) {
                     BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
                     int size = wand == ArcanaItems.MAGIC_WAND ? 1 : 2;
@@ -654,6 +656,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             // CAST WITHERING (elder)
             // Greater version of the spell (gives the entities near the targeted block wither effect for 10 seconds and heals the player for what they deal)
             if ((wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_WITHERING_SCROLL) {
+                serverWorld.spawnParticles(ParticleTypes.CRIMSON_SPORE, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                 if (hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) {
                     BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
                     for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(3.0D), entity -> entity != this)) {
@@ -670,6 +673,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             }
             // Lesser version of the spell (gives the target entity wither effect for 5 seconds)
             else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_WITHERING_SCROLL) {
+                serverWorld.spawnParticles(ParticleTypes.WITCH, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                 if (hitResult instanceof EntityHitResult entityHitResult) {
                     Entity target = entityHitResult.getEntity();
                     if (target instanceof LivingEntity) {

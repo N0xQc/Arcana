@@ -1,7 +1,6 @@
 package net.sigmastr.arcana;
 
 import net.fabricmc.api.ModInitializer;
-
 import net.sigmastr.arcana.block.ArcanaBlocks;
 import net.sigmastr.arcana.entity.ArcanaEntities;
 import net.sigmastr.arcana.item.ArcanaItems;
@@ -16,7 +15,7 @@ public class Arcana implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("Arcana is initializing /-----*");
 		ArcanaEntities.register();
 		ArcanaItems.registerModItems();
 		ArcanaBlocks.registerModBlocks();

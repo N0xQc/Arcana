@@ -32,15 +32,17 @@ public class ArcanaItems {
     public static final Item NETHER_WAND_CORE = registerItem("nether_wand_core", new RuneItem(new FabricItemSettings()));
     public static final Item END_WAND_CORE = registerItem("end_wand_core", new RuneItem(new FabricItemSettings()));
     public static final Item ELDER_WAND_CORE = registerItem("elder_wand_core", new RuneItem(new FabricItemSettings()));
+    public static final Item SOUL_GEM = registerItem("soul_gem", new Item(new FabricItemSettings()));
+    public static final Item NETHERITE_RING = registerItem("netherite_ring", new Item(new FabricItemSettings()));
     public static final Item EMPTY_RING_OF_POWER = registerItem("empty_ring_of_power", new Item(new FabricItemSettings()));
-    public static final Item RING_OF_POWER = registerItem("ring_of_power", new RingOfPowerItem(new FabricItemSettings().maxCount(1)));
 
-    // WANDS
+    // TOOLS
     public static final Item MAGIC_WAND = registerItem("magic_wand", new MagicWandItem(new FabricItemSettings().maxCount(1)));
     public static final Item NETHER_WAND = registerItem("nether_wand", new NetherWandItem(new FabricItemSettings().maxCount(1)));
     public static final Item END_WAND = registerItem("end_wand", new EndWandItem(new FabricItemSettings().maxCount(1)));
     public static final Item ELDER_WAND = registerItem("elder_wand", new ElderWandItem(new FabricItemSettings().maxCount(1)));
     public static final Item MAGIC_SPELL_PROJECTILE = registerItem("magic_spell_projectile", new Item(new FabricItemSettings().maxCount(1)));
+    public static final Item RING_OF_POWER = registerItem("ring_of_power", new RingOfPowerItem(new FabricItemSettings().maxCount(1)));
 
     // SPELL SCROLLS
     public static final Item MAGIC_SPELL_SCROLL = registerItem("magic_spell_scroll", new Item(new FabricItemSettings()));
@@ -88,6 +90,8 @@ public class ArcanaItems {
         entries.add(NETHER_WAND_CORE);
         entries.add(END_WAND_CORE);
         entries.add(ELDER_WAND_CORE);
+        entries.add(SOUL_GEM);
+        entries.add(NETHERITE_RING);
         entries.add(EMPTY_RING_OF_POWER);
 
         // SPELL SCROLLS

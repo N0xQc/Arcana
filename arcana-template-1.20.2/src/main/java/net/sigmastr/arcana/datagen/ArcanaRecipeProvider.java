@@ -26,6 +26,19 @@ public class ArcanaRecipeProvider extends FabricRecipeProvider {
                 .criterion(hasItem(Items.GOLD_NUGGET), conditionsFromItem(Items.GOLD_NUGGET))
                         .offerTo(exporter, "magic_dust");
 
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.NETHERITE_RING, 1)
+                .input(Items.NETHERITE_INGOT, 1)
+                .criterion(hasItem(Items.NETHERITE_INGOT), conditionsFromItem(Items.NETHERITE_INGOT))
+                .offerTo(exporter, "netherite_ring");
+
+        // TOOLS
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.EMPTY_RING_OF_POWER, 1)
+                .input(ArcanaItems.SOUL_GEM, 1)
+                .input(ArcanaItems.NETHERITE_RING, 1)
+                .criterion(hasItem(ArcanaItems.SOUL_GEM), conditionsFromItem(ArcanaItems.SOUL_GEM))
+                .criterion(hasItem(ArcanaItems.NETHERITE_RING), conditionsFromItem(ArcanaItems.NETHERITE_RING))
+                        .offerTo(exporter, "empty_ring_of_power");
+
         // SPELLS
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.MAGIC_SPELL_SCROLL, 3)
                 .input(Items.STICK, 3)
@@ -351,15 +364,15 @@ public class ArcanaRecipeProvider extends FabricRecipeProvider {
                 .criterion(hasItem(Items.NETHER_STAR), conditionsFromItem(Items.NETHER_STAR))
                         .offerTo(exporter, "elder_wand_core");
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.EMPTY_RING_OF_POWER, 1)
-                .pattern(" N ")
-                .pattern("NEN")
-                .pattern(" N ")
-                .input('N', Items.NETHERITE_INGOT)
-                .input('E', Items.ECHO_SHARD)
-                .criterion(hasItem(Items.NETHERITE_INGOT), conditionsFromItem(Items.NETHERITE_INGOT))
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.SOUL_GEM, 1)
+                .pattern(" A ")
+                .pattern("ASA")
+                .pattern(" A ")
+                .input('A', Items.ECHO_SHARD)
+                .input('S', Items.NETHER_STAR)
                 .criterion(hasItem(Items.ECHO_SHARD), conditionsFromItem(Items.ECHO_SHARD))
-                        .offerTo(exporter, "empty_ring_of_power");
+                .criterion(hasItem(Items.NETHER_STAR), conditionsFromItem(Items.NETHER_STAR))
+                .offerTo(exporter, "soul_gem");
 
         // WANDS
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.MAGIC_WAND, 1)

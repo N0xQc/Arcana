@@ -38,6 +38,8 @@ public class ArcanaModelProvider extends FabricModelProvider {
         itemModelGenerator.register(ArcanaItems.NETHER_WAND_CORE, Models.GENERATED);
         itemModelGenerator.register(ArcanaItems.END_WAND_CORE, Models.GENERATED);
         itemModelGenerator.register(ArcanaItems.ELDER_WAND_CORE, Models.GENERATED);
+        itemModelGenerator.register(ArcanaItems.SOUL_GEM, Models.GENERATED);
+        itemModelGenerator.register(ArcanaItems.NETHERITE_RING, Models.GENERATED);
         itemModelGenerator.register(ArcanaItems.EMPTY_RING_OF_POWER, Models.GENERATED);
         // Tools
         itemModelGenerator.register(ArcanaItems.MAGIC_WAND, Models.GENERATED);

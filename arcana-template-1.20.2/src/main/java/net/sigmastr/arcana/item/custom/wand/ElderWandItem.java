@@ -266,7 +266,7 @@ public class ElderWandItem extends Item {
                 }
                 // POCKET DIMENSION
                 else if (spell.equals(CastPocketDimensionScrollItem.getSPELL())) {
-                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
                     ServerWorld serverWorld = (ServerWorld) world;
                     // opens ender chest gui
                     EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
@@ -304,7 +304,7 @@ public class ElderWandItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        return Text.literal("Magic Wand").formatted(Formatting.AQUA);
+        return Text.literal("Elder Wand").formatted(Formatting.AQUA);
     }
 
     public static boolean getCast() {
