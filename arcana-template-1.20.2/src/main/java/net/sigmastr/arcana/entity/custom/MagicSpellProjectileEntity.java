@@ -1,10 +1,7 @@
 package net.sigmastr.arcana.entity.custom;
 
 import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.BlazeEntity;
@@ -44,6 +41,10 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
     private static Item scroll;
     private final Entity player = this.getOwner();
     private final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+    private final static Item[] SCROLLS = {ArcanaItems.BUILD_BRIDGE_SCROLL, ArcanaItems.BUILD_NETHER_PORTAL_SCROLL, ArcanaItems.BUILD_PILLAR_SCROLL, ArcanaItems.BUILD_PLATFORM_SCROLL, ArcanaItems.BUILD_STAIRS_SCROLL, ArcanaItems.BUILD_WALL_SCROLL,
+                                           ArcanaItems.CAST_ANNIHILATION_SCROLL, ArcanaItems.CAST_AURA_SCROLL, ArcanaItems.CAST_BLOOM_SCROLL, ArcanaItems.CAST_CLARITY_SCROLL, ArcanaItems.CAST_DESTRUCTION_SCROLL, ArcanaItems.CAST_FLOOD_SCROLL, ArcanaItems.CAST_HARDENING_SCROLL,
+                                           ArcanaItems.CAST_LOOP_SCROLL, ArcanaItems.CAST_METEOROLOGY_SCROLL, ArcanaItems.CAST_POCKET_DIMENSION_SCROLL, ArcanaItems.CAST_VACUUM_SCROLL, ArcanaItems.CAST_WARP_SCROLL, ArcanaItems.CAST_WITHERING_SCROLL, ArcanaItems.CAST_WRATH_SCROLL,
+                                           ArcanaItems.INVOKE_BLAZE_SCROLL, ArcanaItems.INVOKE_GHAST_SCROLL, ArcanaItems.INVOKE_IRON_GOLEM_SCROLL, ArcanaItems.INVOKE_SNOW_GOLEM_SCROLL, ArcanaItems.INVOKE_UNDEAD_SCROLL, ArcanaItems.INVOKE_VILLAGER_SCROLL, ArcanaItems.INVOKE_WOLF_SCROLL};
 
     public MagicSpellProjectileEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -76,6 +77,11 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
 
             this.setVelocity(direction.x * speed, direction.y * speed, direction.z * speed);
         }
+    }
+
+    @Override
+    public boolean hasNoGravity() {
+        return true;
     }
 
     @Override
@@ -344,9 +350,12 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                 // This condition checks for a non-air block or an entity hit
                 if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
                         hitResult.getType() == HitResult.Type.ENTITY) {
+
                     for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(10.0D), entity -> entity != this)) {
-                        if (entity instanceof LivingEntity && entity != serverPlayer) {
-                            entity.kill();
+                        if (entity instanceof LivingEntity livingEntity && entity != serverPlayer) {
+                            int experiencePoints = livingEntity.getXpToDrop();
+                            livingEntity.damage(serverWorld.getDamageSources().generic(), Float.MAX_VALUE);
+                            serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), experiencePoints));
                         }
                     }
                 }
@@ -357,10 +366,13 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             // Lesser version of the spell (Instantly kills the target entity)
             else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_ANNIHILATION_SCROLL) {
                 serverWorld.playSound(null, getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+
                 if (hitResult instanceof EntityHitResult entityHitResult) {
                     Entity target = entityHitResult.getEntity();
-                    if (target instanceof LivingEntity && target != serverPlayer) {
-                        target.kill();
+                    if (target instanceof LivingEntity livingEntity && target != serverPlayer) {
+                        int experiencePoints = livingEntity.getXpToDrop();
+                        livingEntity.damage(serverWorld.getDamageSources().generic(), Float.MAX_VALUE);
+                        serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), experiencePoints));
                     }
                 }
 
@@ -372,6 +384,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                     NetherWandItem.startCastCooldown(CastAnnihilationScrollItem.getCOOLDOWN() * 2);
                 }
             }
+
 
 
             // CAST AURA (magic)
@@ -466,7 +479,6 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                         if (entity instanceof LivingEntity) {
                             ((LivingEntity) entity).clearStatusEffects();
                             ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, size));
-                            serverWorld.playSound(null, hitPos, SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
                         }
                     }
                 }
@@ -479,24 +491,7 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                     ElderWandItem.startCastCooldown(CastClarityScrollItem.getCOOLDOWN() * 2);
                 }
             }
-            // Lesser version of the spell (Removes all negative effects from the target entity)
-            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_CLARITY_SCROLL) {
-                if (hitResult instanceof EntityHitResult entityHitResult) {
-                    Entity target = entityHitResult.getEntity();
-                    if (target instanceof LivingEntity) {
-                        ((LivingEntity) target).clearStatusEffects();
-                        serverWorld.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
-                    }
-                }
 
-                if (wand == ArcanaItems.END_WAND) {
-                    EndWandItem.setCast(true);
-                    EndWandItem.startCastCooldown(CastClarityScrollItem.getCOOLDOWN() * 2);
-                } else if (wand == ArcanaItems.NETHER_WAND) {
-                    NetherWandItem.setCast(true);
-                    NetherWandItem.startCastCooldown(CastClarityScrollItem.getCOOLDOWN() * 2);
-                }
-            }
 
             // CAST FLOOD (magic)
             // Greater version of the spell (floods a 10x10 area)
@@ -613,9 +608,6 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
             // CAST WARP (end)
             // Only version of the spell (teleports the player to the projectile's location) very long cooldown and high cost for non-end wands
             if ((wand == ArcanaItems.END_WAND || wand == ArcanaItems.ELDER_WAND || wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.NETHER_WAND) && scroll == ArcanaItems.CAST_WARP_SCROLL) {
-                for (int i = 0; i < 32; ++i) {
-                    this.getWorld().addParticle(ParticleTypes.PORTAL, this.getX(), this.getY() + this.random.nextDouble() * 2.0, this.getZ(), this.random.nextGaussian(), 0.0, this.random.nextGaussian());
-                }
 
                 //player.sendMessage(Text.of("Teleporting...1"));
                 if (player instanceof ServerPlayerEntity serverPlayerEntity) {
@@ -626,11 +618,15 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                             serverPlayer.requestTeleport(this.getX(), this.getY(), this.getZ());
                         }
                         serverPlayer.onLanding();
+                        serverWorld.playSound(null, serverPlayer.getBlockPos(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                        serverWorld.spawnParticles(ParticleTypes.WITCH, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                         serverPlayer.damage(this.getDamageSources().fall(), 5.0f);
                     }
                 } else if (serverPlayer != null) {
                     serverPlayer.requestTeleport(this.getX(), this.getY(), this.getZ());
                     serverPlayer.onLanding();
+                    serverWorld.playSound(null, serverPlayer.getBlockPos(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                    serverWorld.spawnParticles(ParticleTypes.WITCH, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                 }
                 this.discard();
 
@@ -990,6 +986,34 @@ public class MagicSpellProjectileEntity extends ThrownItemEntity {
                 else if (wand == ArcanaItems.NETHER_WAND){
                     NetherWandItem.setCast(true);
                     NetherWandItem.startCastCooldown(InvokeWolfScrollItem.getCOOLDOWN() * 2);
+                }
+            }
+
+            // NO SPELL FOUND
+            for (Item scrolls : SCROLLS) {
+                if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND || wand == ArcanaItems.END_WAND || wand == ArcanaItems.NETHER_WAND) && scroll != scrolls) {
+                    if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                            hitResult.getType() == HitResult.Type.ENTITY) {
+                        for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(2.0D), entity -> entity != this)) {
+                            if (entity instanceof LivingEntity && entity != serverPlayer && scroll != ArcanaItems.CAST_WARP_SCROLL) {
+                                entity.damage(serverWorld.getDamageSources().generic(), 1f);
+                            }
+                        }
+                    }
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(100);
+                    } else if (wand == ArcanaItems.ELDER_WAND) {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(100);
+                    } else if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(100);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(100);
+                    }
                 }
             }
         }

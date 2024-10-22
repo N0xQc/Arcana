@@ -64,7 +64,7 @@ public class ArcanaRecipeProvider extends FabricRecipeProvider {
                 .input(Items.ENDER_PEARL, 1)
                 .criterion(hasItem(Items.STICK), conditionsFromItem(Items.STICK))
                 .criterion(hasItem(Items.PAPER), conditionsFromItem(Items.PAPER))
-                .criterion(hasItem(Items.ENDER_PEARL), conditionsFromItem(Items.ENDER_PEARL))
+                .criterion(hasItem(Items.ENDER_PEARL), conditionsFromItem(Items.ENDER_EYE))
                         .offerTo(exporter, "end_spell_scroll");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.ELDER_SPELL_SCROLL, 3)
@@ -153,19 +153,19 @@ public class ArcanaRecipeProvider extends FabricRecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.CAST_BLOOM_SCROLL, 1)
                 .input(ArcanaItems.MAGIC_SPELL_SCROLL, 1)
                 .input(ArcanaItems.CASTER_RUNE, 1)
-                .input(Items.BONE_MEAL, 1)
+                .input(Items.BONE_BLOCK, 1)
                 .criterion(hasItem(ArcanaItems.MAGIC_SPELL_SCROLL), conditionsFromItem(ArcanaItems.MAGIC_SPELL_SCROLL))
                 .criterion(hasItem(ArcanaItems.CASTER_RUNE), conditionsFromItem(ArcanaItems.CASTER_RUNE))
-                .criterion(hasItem(Items.BONE_MEAL), conditionsFromItem(Items.BONE_MEAL))
+                .criterion(hasItem(Items.BONE_BLOCK), conditionsFromItem(Items.BONE_BLOCK))
                         .offerTo(exporter, "cast_bloom_scroll");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.CAST_CLARITY_SCROLL, 1)
                 .input(ArcanaItems.MAGIC_SPELL_SCROLL, 1)
                 .input(ArcanaItems.CASTER_RUNE, 1)
-                .input(Items.MILK_BUCKET, 1)
+                .input(Items.GOLDEN_CARROT, 1)
                 .criterion(hasItem(ArcanaItems.MAGIC_SPELL_SCROLL), conditionsFromItem(ArcanaItems.MAGIC_SPELL_SCROLL))
                 .criterion(hasItem(ArcanaItems.CASTER_RUNE), conditionsFromItem(ArcanaItems.CASTER_RUNE))
-                .criterion(hasItem(Items.MILK_BUCKET), conditionsFromItem(Items.MILK_BUCKET))
+                .criterion(hasItem(Items.GOLDEN_CARROT), conditionsFromItem(Items.GOLDEN_CARROT))
                         .offerTo(exporter, "cast_clarity_scroll");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.CAST_DESTRUCTION_SCROLL, 1)
@@ -180,10 +180,10 @@ public class ArcanaRecipeProvider extends FabricRecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.CAST_FLOOD_SCROLL, 1)
                 .input(ArcanaItems.MAGIC_SPELL_SCROLL, 1)
                 .input(ArcanaItems.CASTER_RUNE, 1)
-                .input(Items.WATER_BUCKET, 1)
+                .input(Items.HEART_OF_THE_SEA, 1)
                 .criterion(hasItem(ArcanaItems.MAGIC_SPELL_SCROLL), conditionsFromItem(ArcanaItems.MAGIC_SPELL_SCROLL))
                 .criterion(hasItem(ArcanaItems.CASTER_RUNE), conditionsFromItem(ArcanaItems.CASTER_RUNE))
-                .criterion(hasItem(Items.WATER_BUCKET), conditionsFromItem(Items.WATER_BUCKET))
+                .criterion(hasItem(Items.HEART_OF_THE_SEA), conditionsFromItem(Items.HEART_OF_THE_SEA))
                         .offerTo(exporter, "cast_flood_scroll");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ArcanaItems.CAST_HARDENING_SCROLL, 1)

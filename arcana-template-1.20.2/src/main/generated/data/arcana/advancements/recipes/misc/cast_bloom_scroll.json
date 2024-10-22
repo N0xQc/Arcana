@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_bone_meal": {
+    "has_bone_block": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:bone_meal"
+              "minecraft:bone_block"
             ]
           }
         ]
@@ -49,7 +49,7 @@
       "has_the_recipe",
       "has_magic_spell_scroll",
       "has_caster_rune",
-      "has_bone_meal"
+      "has_bone_block"
     ]
   ],
   "rewards": {

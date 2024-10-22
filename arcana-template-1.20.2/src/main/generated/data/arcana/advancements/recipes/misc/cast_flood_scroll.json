@@ -13,6 +13,18 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
+    "has_heart_of_the_sea": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:heart_of_the_sea"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_magic_spell_scroll": {
       "conditions": {
         "items": [
@@ -30,18 +42,6 @@
         "recipe": "minecraft:cast_flood_scroll"
       },
       "trigger": "minecraft:recipe_unlocked"
-    },
-    "has_water_bucket": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:water_bucket"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
     }
   },
   "requirements": [
@@ -49,7 +49,7 @@
       "has_the_recipe",
       "has_magic_spell_scroll",
       "has_caster_rune",
-      "has_water_bucket"
+      "has_heart_of_the_sea"
     ]
   ],
   "rewards": {

@@ -4,6 +4,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.inventory.EnderChestInventory;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
@@ -204,8 +205,8 @@ public class MagicWandItem extends Item {
         } else {
             spell = "none";
             type = "none";
-            cooldown = 1;
-            cost = 0;
+            cooldown = 50;
+            cost = -5;
         }
         // Cooldown and experience cost depending on the spell and the type
         // MAGIC_WAND has a 50% cooldown and experience cost reduction on spells of type "magic"
@@ -222,7 +223,7 @@ public class MagicWandItem extends Item {
 
             if (!world.isClient) {
                 // SPAWN MAGIC SPELL PROJECTILE
-                if (!spell.equals(CastDestructionScrollItem.getSPELL()) && !spell.equals(CastLoopScrollItem.getSPELL()) && !spell.equals(CastMeteorologyScrollItem.getSPELL())) {
+                if (!spell.equals(CastAuraScrollItem.getSPELL()) && !spell.equals(CastDestructionScrollItem.getSPELL()) && !spell.equals(CastLoopScrollItem.getSPELL()) && !spell.equals(CastMeteorologyScrollItem.getSPELL()) && !spell.equals(CastPocketDimensionScrollItem.getSPELL())) {
                     world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
                     MagicSpellProjectileEntity magicSpellProjectileEntity = new MagicSpellProjectileEntity(playerEntity, world);
                     magicSpellProjectileEntity.setItem(new ItemStack(ArcanaItems.MAGIC_SPELL_PROJECTILE));
@@ -231,9 +232,19 @@ public class MagicWandItem extends Item {
                 }
                 // AURA
                 if (spell.equals(CastAuraScrollItem.getSPELL())) {
+                    ServerWorld serverWorld = (ServerWorld) world;
                     playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 1));
                     playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 600, 2));
                     world.playSound(null, playerEntity.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, playerEntity.getSoundCategory(), 1.0F, 1.0F);
+                    serverWorld.spawnParticles(ParticleTypes.SONIC_BOOM, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 1, 0.5, 0.5, 0.5, 0.1);
+                }
+                // CLARITY
+                else if (spell.equals(CastClarityScrollItem.getSPELL())) {
+                    ServerWorld serverWorld = (ServerWorld) world;
+                    playerEntity.clearStatusEffects();
+                    playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1));
+                    serverWorld.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                    serverWorld.spawnParticles(ParticleTypes.HEART, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                 }
                 // DESTRUCTION
                 else if (spell.equals(CastDestructionScrollItem.getSPELL())) {
@@ -246,8 +257,9 @@ public class MagicWandItem extends Item {
                 }
                 // LOOP
                 else if (spell.equals(CastLoopScrollItem.getSPELL())) {
-                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
                     ServerWorld serverWorld = (ServerWorld) world;
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                    serverWorld.spawnParticles(ParticleTypes.END_ROD, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
 
                     long currentTimeOfDay = serverWorld.getTimeOfDay() % 24000; // Normalize time within the 0–23999 range
                     long newTimeOfDay = (currentTimeOfDay + 12000) % 24000;  // Add 12000 ticks (12 hours), ensuring time wraps around after 24000 ticks
@@ -257,8 +269,9 @@ public class MagicWandItem extends Item {
                 }
                 // METEOROLOGY
                 else if (spell.equals(CastMeteorologyScrollItem.getSPELL())) {
-                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
                     ServerWorld serverWorld = (ServerWorld) world;
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                    serverWorld.spawnParticles(ParticleTypes.END_ROD, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                     if (serverWorld.isRaining()) {
                         serverWorld.setWeather(10000, 0, false, false);
                     } else {
@@ -267,8 +280,9 @@ public class MagicWandItem extends Item {
                 }
                 // POCKET DIMENSION
                 else if (spell.equals(CastPocketDimensionScrollItem.getSPELL())) {
-                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
                     ServerWorld serverWorld = (ServerWorld) world;
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                    serverWorld.spawnParticles(ParticleTypes.WITCH, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
                     // opens ender chest gui
                     EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
                     playerEntity.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inventory, playerx) -> GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, enderChestInventory), Text.of("Pocket Dimension")));
@@ -306,10 +320,6 @@ public class MagicWandItem extends Item {
     @Override
     public Text getName(ItemStack stack) {
         return Text.literal("Magic Wand").formatted(Formatting.AQUA);
-    }
-
-    public static boolean getCast() {
-        return cast;
     }
 
     public static void setCast(boolean cast) {
