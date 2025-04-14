@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_magic_spell_scroll",
       "has_invoker_rune",
-      "has_iron_block"
+      "has_iron_block",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

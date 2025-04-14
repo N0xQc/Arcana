@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_nether_spell_scroll",
       "has_builder_rune",
-      "has_obsidian"
+      "has_obsidian",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

@@ -34,9 +34,9 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_stone",
-      "has_magic_dust"
+      "has_magic_dust",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_end_spell_scroll",
       "has_caster_rune",
-      "has_ender_pearl"
+      "has_ender_pearl",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

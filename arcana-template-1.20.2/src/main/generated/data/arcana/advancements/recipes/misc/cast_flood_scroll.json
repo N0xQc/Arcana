@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_magic_spell_scroll",
       "has_caster_rune",
-      "has_heart_of_the_sea"
+      "has_heart_of_the_sea",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

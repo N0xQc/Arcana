@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_stick",
       "has_paper",
-      "has_blaze_powder"
+      "has_blaze_powder",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

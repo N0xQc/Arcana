@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_elder_spell_scroll",
       "has_caster_rune",
-      "has_lightning_rod"
+      "has_lightning_rod",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

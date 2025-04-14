@@ -1,0 +1,874 @@
+package net.nox.arcana.entity.custom;
+
+import net.minecraft.block.*;
+import net.minecraft.entity.*;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.BlazeEntity;
+import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.SnowGolemEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.nox.arcana.builder.*;
+import net.nox.arcana.entity.ArcanaEntities;
+import net.nox.arcana.item.ArcanaItems;
+import net.nox.arcana.item.custom.MagicSpellScrollItem;
+import net.nox.arcana.item.custom.scroll.*;
+import net.nox.arcana.item.custom.wand.ElderWandItem;
+import net.nox.arcana.item.custom.wand.EndWandItem;
+import net.nox.arcana.item.custom.wand.MagicWandItem;
+import net.nox.arcana.item.custom.wand.NetherWandItem;
+
+public class MagicSpellProjectileEntity extends ThrownItemEntity {
+    private static Item wand;
+    private static Item scroll;
+    private final Entity player = this.getOwner();
+    private final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+    private final static MagicSpellScrollItem[] SCROLLS = {ArcanaItems.BUILD_BRIDGE_SCROLL, ArcanaItems.BUILD_NETHER_PORTAL_SCROLL, ArcanaItems.BUILD_PILLAR_SCROLL, ArcanaItems.BUILD_PLATFORM_SCROLL, ArcanaItems.BUILD_STAIRS_SCROLL, ArcanaItems.BUILD_WALL_SCROLL,
+                                           ArcanaItems.CAST_ANNIHILATION_SCROLL, ArcanaItems.CAST_AURA_SCROLL, ArcanaItems.CAST_BLOOM_SCROLL, ArcanaItems.CAST_CLARITY_SCROLL, ArcanaItems.CAST_DESTRUCTION_SCROLL, ArcanaItems.CAST_FLOOD_SCROLL, ArcanaItems.CAST_HARDENING_SCROLL,
+                                           ArcanaItems.CAST_LOOP_SCROLL, ArcanaItems.CAST_METEOROLOGY_SCROLL, ArcanaItems.CAST_POCKET_DIMENSION_SCROLL, ArcanaItems.CAST_VACUUM_SCROLL, ArcanaItems.CAST_WARP_SCROLL, ArcanaItems.CAST_WITHERING_SCROLL, ArcanaItems.CAST_WRATH_SCROLL,
+                                           ArcanaItems.INVOKE_BLAZE_SCROLL, ArcanaItems.INVOKE_GHAST_SCROLL, ArcanaItems.INVOKE_IRON_GOLEM_SCROLL, ArcanaItems.INVOKE_SNOW_GOLEM_SCROLL, ArcanaItems.INVOKE_UNDEAD_SCROLL, ArcanaItems.INVOKE_VILLAGER_SCROLL, ArcanaItems.INVOKE_WOLF_SCROLL};
+
+    public MagicSpellProjectileEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+        super(entityType, world);
+    }
+    public MagicSpellProjectileEntity(LivingEntity livingEntity, World world) {
+        super(ArcanaEntities.MAGIC_SPELL_PROJECTILE, livingEntity, world);
+        if (livingEntity.getStackInHand(livingEntity.getActiveHand()).getItem() == ArcanaItems.MAGIC_WAND) {
+            wand = ArcanaItems.MAGIC_WAND;
+        }
+        else if (livingEntity.getStackInHand(livingEntity.getActiveHand()).getItem() == ArcanaItems.NETHER_WAND) {
+            wand = ArcanaItems.NETHER_WAND;
+        }
+        else if (livingEntity.getStackInHand(livingEntity.getActiveHand()).getItem() == ArcanaItems.END_WAND) {
+            wand = ArcanaItems.END_WAND;
+        }
+        else if (livingEntity.getStackInHand(livingEntity.getActiveHand()).getItem() == ArcanaItems.ELDER_WAND) {
+            wand = ArcanaItems.ELDER_WAND;
+        }
+        scroll = livingEntity.getOffHandStack().getItem();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (!this.getWorld().isClient) {
+            Vec3d velocity = this.getVelocity();
+            double speed = velocity.length();
+            Vec3d direction = new Vec3d(velocity.x / speed, velocity.y / speed, velocity.z / speed);
+
+            this.setVelocity(direction.x * speed, direction.y * speed, direction.z * speed);
+        }
+    }
+
+    @Override
+    public boolean hasNoGravity() {
+        return true;
+    }
+
+    @Override
+    protected Item getDefaultItem() {
+        return ArcanaItems.MAGIC_SPELL_PROJECTILE;
+    }
+
+    @Override
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+        return new EntitySpawnS2CPacket(this);
+    }
+
+
+    @Override
+    protected void onBlockHit(BlockHitResult blockHitResult) {
+        super.onBlockHit(blockHitResult);
+        this.discard();
+        if (!this.getWorld().isClient) {
+            ServerWorld serverWorld = (ServerWorld) this.getWorld();
+            BlockState hitBlockState = serverWorld.getBlockState(blockHitResult.getBlockPos());
+            Block hitBlock = hitBlockState.getBlock();
+            serverWorld.spawnParticles(ParticleTypes.ENCHANT, (double)getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY() + getWorld().random.nextDouble(), (double)getBlockPos().getZ() + getWorld().random.nextDouble(), 500, 0.0, 0.0, 0.0, 1.0);
+
+
+            // [SPELLS]
+            // BUILD BRIDGE (magic)
+            // Greater version of the spell (builds 5x10 bridge)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.BUILD_BRIDGE_SCROLL) {
+                if (NaturalBlocks.isNatural(hitBlock)) {
+                    String direction = wand == ArcanaItems.MAGIC_WAND ? MagicWandItem.getDirection() : ElderWandItem.getDirection();
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 10 : 20;
+                    boolean sneaking = serverPlayer.isInSneakingPose();
+                    int sneakOffset = sneaking ? 2 : 1;
+                    BridgeBuilder bridgeBuilder = new BridgeBuilder(serverWorld, getBlockPos().down(sneakOffset), direction, hitBlock, size, wand); // Adjust length as needed
+                    bridgeBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                    } else {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+            // Lesser version of the spell (builds 3x10 bridge)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.BUILD_BRIDGE_SCROLL) {
+                if (NaturalBlocks.isNatural(hitBlock)) {
+                    String direction = wand == ArcanaItems.END_WAND ? EndWandItem.getDirection() : NetherWandItem.getDirection();
+                    boolean sneaking = serverPlayer.isInSneakingPose();
+                    int sneakOffset = sneaking ? 2 : 1;
+                    BridgeBuilder bridgeBuilder = new BridgeBuilder(serverWorld, getBlockPos().down(sneakOffset), direction, hitBlock, 10, wand); // Adjust length as needed
+                    bridgeBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                    } else {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+
+
+            // BUILD PLATFORM (magic)
+            // Greater version of the spell (builds 10x10 platform)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.BUILD_PLATFORM_SCROLL) {
+                if (NaturalBlocks.isNatural(hitBlock)) {
+                    String direction = wand == ArcanaItems.MAGIC_WAND ? MagicWandItem.getDirection() : ElderWandItem.getDirection();
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 10 : 20;
+                    PlatformBuilder platformBuilder = new PlatformBuilder(serverWorld, getBlockPos(), hitBlock, size);
+                    platformBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                    } else {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+            // Lesser version of the spell (builds 5x5 platform)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.BUILD_PLATFORM_SCROLL) {
+                if (NaturalBlocks.isNatural(hitBlock)) {
+                    String direction = wand == ArcanaItems.END_WAND ? EndWandItem.getDirection() : NetherWandItem.getDirection();
+                    PlatformBuilder platformBuilder = new PlatformBuilder(serverWorld, getBlockPos(), hitBlock, 5);
+                    platformBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onCollision(HitResult hitResult) {
+        super.onCollision(hitResult);
+        if (!this.getWorld().isClient) {
+            ServerWorld serverWorld = (ServerWorld) this.getWorld();
+            BlockState hitBlockState = serverWorld.getBlockState(getBlockPos());
+            Block hitBlock = hitBlockState.getBlock();
+            serverWorld.spawnParticles(ParticleTypes.ENCHANT, (double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY() + getWorld().random.nextDouble(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 500, 0.0, 0.0, 0.0, 1.0);
+
+
+            // [SPELLS]
+            // [CAST SPELLS]
+            // CAST ANNIHILATION (elder)
+            // Greater version of the spell (Instantly kills all entities in a 10 block radius)
+            if ((wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_ANNIHILATION_SCROLL) {
+                serverWorld.playSound(null, getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                // This condition checks for a non-air block or an entity hit
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() == HitResult.Type.ENTITY) {
+
+                    for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(10.0D), entity -> entity != this)) {
+                        if (entity instanceof LivingEntity livingEntity && entity != serverPlayer) {
+                            int experiencePoints = livingEntity.getXpToDrop();
+                            livingEntity.damage(serverWorld.getDamageSources().generic(), Float.MAX_VALUE);
+                            serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), experiencePoints));
+                        }
+                    }
+                }
+
+                ElderWandItem.setCast(true);
+                ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+            }
+            // Lesser version of the spell (Instantly kills the target entity)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_ANNIHILATION_SCROLL) {
+                serverWorld.playSound(null, getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+
+                if (hitResult instanceof EntityHitResult entityHitResult) {
+                    Entity target = entityHitResult.getEntity();
+                    if (target instanceof LivingEntity livingEntity && target != serverPlayer) {
+                        int experiencePoints = livingEntity.getXpToDrop();
+                        livingEntity.damage(serverWorld.getDamageSources().generic(), Float.MAX_VALUE);
+                        serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), experiencePoints));
+                    }
+                }
+
+                if (wand == ArcanaItems.END_WAND) {
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                } else if (wand == ArcanaItems.NETHER_WAND) {
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+
+
+            // CAST AURA (magic)
+            // Greater version of the spell (Gives the entities near the targeted block have extra hearts and resistance for 30 seconds)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_AURA_SCROLL) {
+                serverWorld.playSound(null, getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                serverWorld.spawnParticles(ParticleTypes.GLOW, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 100, 0.5, 0.5, 0.5, 0.1);
+                if (hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) {
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 1 : 2;
+                    for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(3.0D), entity -> entity != this)) {
+                        if (entity instanceof LivingEntity) {
+                            ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, size));
+                            ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 600, 2* size));
+                            serverWorld.playSound(null, hitPos, SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                        }
+                    }
+                }
+
+                if (wand == ArcanaItems.MAGIC_WAND) {
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                } else {
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+
+
+            // CAST BLOOM (magic)
+            // Greater version of the spell (plants a tree or grows a 5x5 area)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_BLOOM_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() != HitResult.Type.ENTITY) {
+
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 2 : 5;
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    BloomBuilder bloomBuilder = new BloomBuilder(serverWorld, hitPos, size); // Default radius for 5x5 area
+
+                    if (serverPlayer.isSneaking()) {
+                        // Plant and grow a tree at the target location
+                        bloomBuilder.plantAndGrowTree();
+                    } else {
+                        // Grow the area when sneaking
+                        bloomBuilder.applyGrowth();
+                    }
+
+                    // Cooldown logic
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                    } else {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+
+            // Lesser version of the spell (plants a tree grows a 3x3 area)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_BLOOM_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() != HitResult.Type.ENTITY) {
+
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    BloomBuilder bloomBuilder = new BloomBuilder(serverWorld, hitPos, 1);
+
+                    if (serverPlayer.isSneaking()) {
+                        // Plant and grow a tree at the target location
+                        bloomBuilder.plantAndGrowTree();
+                    } else {
+                        // Grow the area when sneaking
+                        bloomBuilder.applyGrowth();
+                    }
+
+                    if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+
+            // CAST CLARITY (magic)
+            // Greater version of the spell (Removes all negative effects from the entities near the targeted block and gives them regeneration for 5 seconds)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_CLARITY_SCROLL) {
+                if (hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) {
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 1 : 2;
+                    for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(3.0D), entity -> entity != this)) {
+                        if (entity instanceof LivingEntity) {
+                            ((LivingEntity) entity).clearStatusEffects();
+                            ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, size));
+                        }
+                    }
+                }
+
+                if (wand == ArcanaItems.MAGIC_WAND) {
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                } else {
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+
+
+            // CAST FLOOD (magic)
+            // Greater version of the spell (floods a 10x10 area)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_FLOOD_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() == HitResult.Type.ENTITY) {
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 5 : 10;
+                    FloodBuilder floodBuilder = new FloodBuilder(serverWorld, getBlockPos(), size);
+                    floodBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                    } else {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+            // Lesser version of the spell (floods a 5x5 area)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_FLOOD_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() == HitResult.Type.ENTITY) {
+                    FloodBuilder floodBuilder = new FloodBuilder(serverWorld, getBlockPos(), 1);
+                    floodBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+
+
+            // CAST HARDENING (magic)
+            // Greater version of the spell (hardens a 10x10 area (water to ice, lava to obsidian))
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_HARDENING_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() != HitResult.Type.ENTITY) {
+                    int size = wand == ArcanaItems.MAGIC_WAND ? 5 : 10;
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    HardeningBuilder hardeningBuilder = new HardeningBuilder(serverWorld, hitPos, size);
+                    hardeningBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                    } else {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+            // Lesser version of the spell (hardens a 5x5 area (water to ice, lava to obsidian))
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_HARDENING_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() != HitResult.Type.ENTITY) {
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    HardeningBuilder hardeningBuilder = new HardeningBuilder(serverWorld, hitPos, 3);
+                    hardeningBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+
+
+            // CAST VACUUM (end)
+            // Greater version of the spell (drains water/lava in a 10x10 area)
+            if ((wand == ArcanaItems.END_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_VACUUM_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() != HitResult.Type.ENTITY) {
+                    int size = wand == ArcanaItems.END_WAND ? 5 : 10;
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    VacuumBuilder vacuumBuilder = new VacuumBuilder(serverWorld, hitPos, size);
+                    vacuumBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                    } else {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+            // Lesser version of the spell (drains water/lava in a 5x5 area)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_VACUUM_SCROLL) {
+                if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                        hitResult.getType() != HitResult.Type.ENTITY) {
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    VacuumBuilder vacuumBuilder = new VacuumBuilder(serverWorld, hitPos, 3);
+                    vacuumBuilder.startBuilding();
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                    }
+                }
+            }
+
+
+            // CAST WARP (end)
+            // Only version of the spell (teleports the player to the projectile's location) very long cooldown and high cost for non-end wands
+            if ((wand == ArcanaItems.END_WAND || wand == ArcanaItems.ELDER_WAND || wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.NETHER_WAND) && scroll == ArcanaItems.CAST_WARP_SCROLL) {
+
+                //player.sendMessage(Text.of("Teleporting...1"));
+                if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+                    if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.getWorld() == this.getWorld() && !serverPlayerEntity.isSleeping()) {
+                        if (serverPlayer.hasVehicle()) {
+                            serverPlayerEntity.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ());
+                        } else {
+                            serverPlayer.requestTeleport(this.getX(), this.getY(), this.getZ());
+                        }
+                        serverPlayer.onLanding();
+                        serverWorld.playSound(null, serverPlayer.getBlockPos(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                        serverWorld.spawnParticles(ParticleTypes.WITCH, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
+                        serverPlayer.damage(this.getDamageSources().fall(), 5.0f);
+                    }
+                } else if (serverPlayer != null) {
+                    serverPlayer.requestTeleport(this.getX(), this.getY(), this.getZ());
+                    serverPlayer.onLanding();
+                    serverWorld.playSound(null, serverPlayer.getBlockPos(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                    serverWorld.spawnParticles(ParticleTypes.WITCH, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), 100, 0.5, 0.5, 0.5, 0.1);
+                }
+                this.discard();
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+
+            // CAST WITHERING (elder)
+            // Greater version of the spell (gives the entities near the targeted block wither effect for 10 seconds and heals the player for what they deal)
+            if ((wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_WITHERING_SCROLL) {
+                serverWorld.spawnParticles(ParticleTypes.CRIMSON_SPORE, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 100, 0.5, 0.5, 0.5, 0.1);
+                if (hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) {
+                    BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+                    for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(3.0D), entity -> entity != this)) {
+                        if (entity instanceof LivingEntity) {
+                            ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200, 2));
+                            serverWorld.playSound(null, hitPos, SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                        }
+                    }
+                    ((LivingEntity) serverPlayer).addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 2));
+                }
+
+                ElderWandItem.setCast(true);
+                ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+            }
+            // Lesser version of the spell (gives the target entity wither effect for 5 seconds)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_WITHERING_SCROLL) {
+                serverWorld.spawnParticles(ParticleTypes.WITCH, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 100, 0.5, 0.5, 0.5, 0.1);
+                if (hitResult instanceof EntityHitResult entityHitResult) {
+                    Entity target = entityHitResult.getEntity();
+                    if (target instanceof LivingEntity) {
+                        ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 100, 1));
+                        serverWorld.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, serverPlayer.getSoundCategory(), 1.0F, 1.0F);
+                    }
+                }
+
+                if (wand == ArcanaItems.MAGIC_WAND) {
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                } else if (wand == ArcanaItems.END_WAND) {
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                } else if (wand == ArcanaItems.NETHER_WAND) {
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+
+            // CAST WRATH (nether)
+            // Greater version of the spell (casts 3-5 lightning bolts)
+            if ((wand == ArcanaItems.NETHER_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.CAST_WRATH_SCROLL) {
+                int size = wand == ArcanaItems.NETHER_WAND ? 3 : 5;
+                for (int i = 0; i < size; ++i) {
+                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(serverWorld);
+                    lightningEntity.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(lightningEntity);
+                }
+
+                if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (casts 1-2 lightning bolt)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.CAST_WRATH_SCROLL) {
+                int size = wand == ArcanaItems.END_WAND ? 1 : 2;
+                for (int i = 0; i < size; ++i) {
+                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(serverWorld);
+                    lightningEntity.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(lightningEntity);
+                }
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+
+            }
+
+
+            // [INVOKE SPELLS]
+            // INVOKE BLAZE (nether)
+            // Greater version of the spell (invokes 3 blazes)
+            if ((wand == ArcanaItems.NETHER_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.INVOKE_BLAZE_SCROLL) {
+                int size = wand == ArcanaItems.NETHER_WAND ? 3 : 5;
+                for (int i = 0; i < size; ++i) {
+                    BlazeEntity blaze = EntityType.BLAZE.create(serverWorld);
+                    blaze.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(blaze);
+                }
+
+                if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (invokes 1 blaze)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_BLAZE_SCROLL) {
+                BlazeEntity blaze = EntityType.BLAZE.create(serverWorld);
+                blaze.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                serverWorld.spawnEntity(blaze);
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+            }
+
+            // INVOKE GHAST (nether)
+            // Greater version of the spell (invokes 2-3 ghasts)
+            if ((wand == ArcanaItems.NETHER_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.INVOKE_GHAST_SCROLL) {
+                int size = wand == ArcanaItems.NETHER_WAND ? 2 : 3;
+                for (int i = 0; i < size; ++i) {
+                    GhastEntity ghast = EntityType.GHAST.create(serverWorld);
+                    ghast.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(ghast);
+                }
+
+                if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (invokes 1 ghast)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_GHAST_SCROLL) {
+                GhastEntity ghast = EntityType.GHAST.create(serverWorld);
+                ghast.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                serverWorld.spawnEntity(ghast);
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+            }
+
+            // INVOKE IRON GOLEM (magic)
+            // Greater version of the spell (invokes 2 iron golems)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.INVOKE_IRON_GOLEM_SCROLL) {
+                int size = wand == ArcanaItems.MAGIC_WAND ? 2 : 3;
+                for (int i = 0; i < size; ++i) {
+                    IronGolemEntity ironGolem = EntityType.IRON_GOLEM.create(serverWorld);
+                    ironGolem.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(ironGolem);
+                }
+
+                if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (invokes 1 iron golem)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_IRON_GOLEM_SCROLL) {
+                IronGolemEntity ironGolem = EntityType.IRON_GOLEM.create(serverWorld);
+                ironGolem.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                serverWorld.spawnEntity(ironGolem);
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+            // INVOKE SNOW GOLEM (magic)
+            // Greater version of the spell (invokes 5 snow golems)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.INVOKE_SNOW_GOLEM_SCROLL) {
+                int size = wand == ArcanaItems.MAGIC_WAND ? 5 : 7;
+                for (int i = 0; i < size; ++i) {
+                    SnowGolemEntity snowGolem = EntityType.SNOW_GOLEM.create(serverWorld);
+                    snowGolem.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(snowGolem);
+                }
+
+                if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (invokes 3 snow golems)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_SNOW_GOLEM_SCROLL) {
+                for (int i = 0; i < 3; ++i) {
+                    SnowGolemEntity snowGolem = EntityType.SNOW_GOLEM.create(serverWorld);
+                    snowGolem.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(snowGolem);
+                }
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+            // INVOKE UNDEAD (nether)
+            // Greater version of the spell (invokes 2 zombie and 1 skeletons)
+            if ((wand == ArcanaItems.NETHER_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.INVOKE_UNDEAD_SCROLL) {
+                int sSize = wand == ArcanaItems.NETHER_WAND ? 1 : 2;
+                for (int i = 0; i < sSize; ++i) {
+                    SkeletonEntity skeleton = EntityType.SKELETON.create(serverWorld);
+                    skeleton.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    getWorld().spawnEntity(skeleton);
+                }
+                int zSize = wand == ArcanaItems.NETHER_WAND ? 2 : 3;
+                for (int i = 0; i < zSize; ++i) {
+                    ZombieEntity zombie = EntityType.ZOMBIE.create(serverWorld);
+                    zombie.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(zombie);
+                }
+
+                if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (invokes 1 zombie or 1 skeleton)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_UNDEAD_SCROLL) {
+                if (getWorld().random.nextBoolean()) {
+                    ZombieEntity zombie = EntityType.ZOMBIE.create(serverWorld);
+                    zombie.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(zombie);
+                } else {
+                    SkeletonEntity skeleton = EntityType.SKELETON.create(serverWorld);
+                    skeleton.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(skeleton);
+                }
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+            }
+
+
+            // INVOKE VILLAGER (elder)
+            // Greater version of the spell (invokes 3 villagers)
+            if (wand == ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_VILLAGER_SCROLL) {
+                for (int i = 0; i < 3; ++i) {
+                    LivingEntity villager = EntityType.VILLAGER.create(serverWorld);
+                    villager.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(villager);
+                }
+                ElderWandItem.setCast(true);
+                ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+            }
+            // Lesser version of the spell (invokes 1 villagers)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_VILLAGER_SCROLL) {
+                LivingEntity villager = EntityType.VILLAGER.create(serverWorld);
+                villager.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                serverWorld.spawnEntity(villager);
+
+                if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+
+            // INVOKE WOLF (magic)
+            // Greater version of the spell (invokes 2-3 wolves)
+            if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND) && scroll == ArcanaItems.INVOKE_WOLF_SCROLL) {
+                int size = wand == ArcanaItems.MAGIC_WAND ? 2 : 3;
+                for (int i = 0; i < size; ++i) {
+                    WolfEntity wolf = EntityType.WOLF.create(serverWorld);
+                    wolf.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                    serverWorld.spawnEntity(wolf);
+                }
+
+                if (wand == ArcanaItems.MAGIC_WAND){
+                    MagicWandItem.setCast(true);
+                    MagicWandItem.startCastCooldown(MagicWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.ELDER_WAND){
+                    ElderWandItem.setCast(true);
+                    ElderWandItem.startCastCooldown(ElderWandItem.getCooldown() * 2);
+                }
+            }
+            // Lesser version of the spell (invokes 1 wolf)
+            else if (wand != ArcanaItems.ELDER_WAND && scroll == ArcanaItems.INVOKE_WOLF_SCROLL) {
+                WolfEntity wolf = EntityType.WOLF.create(serverWorld);
+                wolf.refreshPositionAndAngles((double) getBlockPos().getX() + getWorld().random.nextDouble(), getBlockPos().getY(), (double) getBlockPos().getZ() + getWorld().random.nextDouble(), 0.0F, 0.0F);
+                serverWorld.spawnEntity(wolf);
+
+                if (wand == ArcanaItems.END_WAND){
+                    EndWandItem.setCast(true);
+                    EndWandItem.startCastCooldown(EndWandItem.getCooldown() * 2);
+                }
+                else if (wand == ArcanaItems.NETHER_WAND){
+                    NetherWandItem.setCast(true);
+                    NetherWandItem.startCastCooldown(NetherWandItem.getCooldown() * 2);
+                }
+            }
+
+            // NO SPELL FOUND
+            for (Item scrolls : SCROLLS) {
+                if ((wand == ArcanaItems.MAGIC_WAND || wand == ArcanaItems.ELDER_WAND || wand == ArcanaItems.END_WAND || wand == ArcanaItems.NETHER_WAND) && scroll != scrolls) {
+                    if ((hitResult.getType() == HitResult.Type.BLOCK && serverWorld.getBlockState(((BlockHitResult) hitResult).getBlockPos()).getBlock() != Blocks.AIR) ||
+                            hitResult.getType() == HitResult.Type.ENTITY) {
+                        for (Entity entity : serverWorld.getEntitiesByClass(Entity.class, getBoundingBox().expand(2.0D), entity -> entity != this)) {
+                            if (entity instanceof LivingEntity && entity != serverPlayer && scroll != ArcanaItems.CAST_WARP_SCROLL) {
+                                entity.damage(serverWorld.getDamageSources().generic(), 3f);
+                            }
+                        }
+                    }
+
+                    if (wand == ArcanaItems.MAGIC_WAND) {
+                        MagicWandItem.setCast(true);
+                        MagicWandItem.startCastCooldown(100);
+                    } else if (wand == ArcanaItems.ELDER_WAND) {
+                        ElderWandItem.setCast(true);
+                        ElderWandItem.startCastCooldown(100);
+                    } else if (wand == ArcanaItems.END_WAND) {
+                        EndWandItem.setCast(true);
+                        EndWandItem.startCastCooldown(100);
+                    } else if (wand == ArcanaItems.NETHER_WAND) {
+                        NetherWandItem.setCast(true);
+                        NetherWandItem.startCastCooldown(100);
+                    }
+                }
+            }
+        }
+    }
+}

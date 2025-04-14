@@ -1,6 +1,8 @@
 {
   "block.arcana.seeing_stone": "Seeing Stone",
 
+  "fluid.arcana.blood": "Blood",
+
   "item.arcana.magic_dust": "Magic Dust",
   "item.arcana.builder_rune": "Builder Rune",
   "item.arcana.caster_rune": "Caster Rune",
@@ -15,7 +17,9 @@
   "item.arcana.soul_gem": "Soul Gem",
   "item.arcana.netherite_ring": "Netherite Ring",
   "item.arcana.empty_ring_of_power": "Empty Ring of Power",
+  "item.arcana.blood_bottle": "Blood Bottle",
   "item.arcana.ring_of_power": "Ring of Power",
+  "item.arcana.magic_whip": "Magic Whip",
 
   "item.arcana.magic_wand": "Magic Wand",
   "item.arcana.nether_wand": "Nether Wand",
@@ -45,9 +49,10 @@
   "item.arcana.cast_withering_scroll": "Cast Withering Scroll",
   "item.arcana.cast_warp_scroll": "Cast Warp Scroll",
   "item.arcana.cast_loop_scroll": "Cast Loop Scroll",
-  "item.arcana.cast_vacuum_scroll": "Cast Vacuum Scroll",
   "item.arcana.cast_meteorology_scroll": "Cast Meteorology Scroll",
-    "item.arcana.cast_pocket_dimension_scroll": "Cast Pocket Dimension Scroll",
+  "item.arcana.cast_pocket_dimension_scroll": "Cast Pocket Dimension Scroll",
+  "item.arcana.cast_propulsion_scroll": "Cast Propulsion Scroll",
+  "item.arcana.cast_vacuum_scroll": "Cast Vacuum Scroll",
 
   "item.arcana.invoke_blaze_scroll": "Invoke Blaze Scroll",
   "item.arcana.invoke_ghast_scroll": "Invoke Ghast Scroll",
@@ -55,5 +60,35 @@
   "item.arcana.invoke_snow_golem_scroll": "Invoke Snow Golem Scroll",
   "item.arcana.invoke_undead_scroll": "Invoke Undead Scroll",
   "item.arcana.invoke_villager_scroll": "Invoke Villager Scroll",
-  "item.arcana.invoke_wolf_scroll": "Invoke Wolf Scroll"
+  "item.arcana.invoke_wolf_scroll": "Invoke Wolf Scroll",
+
+  "tooltip.arcana.build_bridge_scroll.spell_description": "Build a bridge back to the target.",
+  "tooltip.arcana.build_nether_portal_scroll.spell_description": "Build a Nether portal on top of the target.",
+  "tooltip.arcana.build_pillar_scroll.spell_description": "Build a pillar on top of the target.",
+  "tooltip.arcana.build_platform_scroll.spell_description": "Build a platform on top of the target.",
+  "tooltip.arcana.build_stairs_scroll.spell_description": "Build stairs on top of the target.",
+  "tooltip.arcana.build_wall_scroll.spell_description": "Build a wall on top of the target.",
+
+  "tooltip.arcana.cast_annihilation_scroll.spell_description": "Annihilate life within the targeted area.",
+  "tooltip.arcana.cast_bloom_scroll.spell_description": "Make the earth flourish within the targeted area.",
+  "tooltip.arcana.cast_destruction_scroll.spell_description": "Cast a ball of fire at the target.",
+  "tooltip.arcana.cast_flood_scroll.spell_description": "Flood the targeted area with water.",
+  "tooltip.arcana.cast_wrath_scroll.spell_description": "Cast a bolt of lightning upon the target.",
+  "tooltip.arcana.cast_clarity_scroll.spell_description": "Clear the user of ill effects.",
+  "tooltip.arcana.cast_aura_scroll.spell_description": "Create a protective aura around the user.",
+  "tooltip.arcana.cast_hardening_scroll.spell_description": "Harden targeted liquids.",
+  "tooltip.arcana.cast_withering_scroll.spell_description": "Excerpt the life essence of the target.",
+  "tooltip.arcana.cast_warp_scroll.spell_description": "Warp the user to the targeted location.",
+  "tooltip.arcana.cast_loop_scroll.spell_description": "Warp time to the next day.",
+  "tooltip.arcana.cast_meteorology_scroll.spell_description": "Manipulate the weather.",
+  "tooltip.arcana.cast_pocket_dimension_scroll.spell_description": "Open the pocket dimension of the user.",
+  "tooltip.arcana.cast_propulsion_scroll.spell_description": "Propel the user in the direction they are looking.",
+  "tooltip.arcana.cast_vacuum_scroll.spell_description": "Create a vacuum in the targeted area.",
+  "tooltip.arcana.invoke_blaze_scroll.spell_description": "Summon a blaze to fight for you.",
+  "tooltip.arcana.invoke_ghast_scroll.spell_description": "Summon a ghast to fight for you.",
+  "tooltip.arcana.invoke_iron_golem_scroll.spell_description": "Summon an iron golem to fight for you.",
+  "tooltip.arcana.invoke_snow_golem_scroll.spell_description": "Summon a snow golem to fight for you.",
+  "tooltip.arcana.invoke_undead_scroll.spell_description": "Summon an undead to fight for you.",
+  "tooltip.arcana.invoke_villager_scroll.spell_description": "Summon a villager to fight for you.",
+  "tooltip.arcana.invoke_wolf_scroll.spell_description": "Summon a wolf to fight for you."
 }

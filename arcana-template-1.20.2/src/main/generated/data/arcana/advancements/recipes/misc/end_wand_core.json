@@ -34,9 +34,9 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_amethyst_shard",
-      "has_ender_eye"
+      "has_ender_eye",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

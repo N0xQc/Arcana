@@ -1,0 +1,100 @@
+package net.nox.arcana.item.custom;
+
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketItem;
+import dev.emi.trinkets.api.TrinketsApi;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class RingOfPowerItem extends TrinketItem {
+    public RingOfPowerItem(FabricItemSettings fabricItemSettings) {
+        super(fabricItemSettings);
+
+        // Register the tick event listener
+        ServerTickEvents.START_SERVER_TICK.register(this::onTick);
+    }
+
+    @Override
+    public boolean hasGlint(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        return Text.literal("Ring of Power").formatted(Formatting.GOLD);
+    }
+
+    // This method will be called every server tick
+    private void onTick(MinecraftServer server) {
+        // Iterate over all worlds on the server
+        for (ServerWorld world : server.getWorlds()) {
+            // Iterate over all players in the world
+            for (PlayerEntity player : world.getPlayers()) {
+                // Check if the player has the Ring of Power in their inventory or hand
+                if (hasRingOfPower(player)) {
+                    applyBeaconEffects(player);
+
+                    // Make player invisible if the item is in either hand
+                    if (isRingInHand(player)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 200, 0, true, false));
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean hasRingOfPower(PlayerEntity player) {
+        AtomicReference<Boolean> hasRing = new AtomicReference<>(false);
+        TrinketsApi.getTrinketComponent(player).ifPresent(trinketComponent -> {
+            // Check if the player has the Ring of Power in their trinket slots
+            for (Pair<SlotReference, ItemStack> slot : trinketComponent.getAllEquipped()) {
+                ItemStack stack = slot.getRight();
+                if (stack.getItem() instanceof RingOfPowerItem) {
+                    hasRing.set(true);
+                }
+            }
+        });
+
+        return hasRing.get();
+    }
+
+    private boolean isRingInHand(PlayerEntity player) {
+        AtomicReference<Boolean> isInHand = new AtomicReference<>(false);
+        TrinketsApi.getTrinketComponent(player).ifPresent(trinketComponent -> {
+            for (Pair<SlotReference, ItemStack> slot : trinketComponent.getAllEquipped()) {
+                // Check if the player has the Ring of Power in the hand or offhand Trinket slots
+                if (slot.getLeft().inventory().getSlotType().getName().equals("ring")) {
+                    ItemStack stack = slot.getRight();
+                    if (stack.getItem() instanceof RingOfPowerItem) {
+                        isInHand.set(true);
+                    }
+                }
+            }
+        });
+
+        return isInHand.get();
+    }
+
+    private void applyBeaconEffects(PlayerEntity player) {
+        // Apply all beacon effects (Speed, Haste, Strength, Resistance, Regeneration, etc.)
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 200, 1, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 200, 1, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 200, 1, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200, 1, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 1, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 200, 1, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200, 0, true, true));
+    }
+}

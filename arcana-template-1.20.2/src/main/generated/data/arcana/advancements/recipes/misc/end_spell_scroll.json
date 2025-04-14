@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_stick",
       "has_paper",
-      "has_ender_pearl"
+      "has_ender_pearl",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

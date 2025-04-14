@@ -34,9 +34,9 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_soul_gem",
-      "has_netherite_ring"
+      "has_netherite_ring",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

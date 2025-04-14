@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_nether_spell_scroll",
       "has_invoker_rune",
-      "has_blaze_powder"
+      "has_blaze_powder",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

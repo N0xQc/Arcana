@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_elder_spell_scroll",
       "has_invoker_rune",
-      "has_totem_of_undying"
+      "has_totem_of_undying",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

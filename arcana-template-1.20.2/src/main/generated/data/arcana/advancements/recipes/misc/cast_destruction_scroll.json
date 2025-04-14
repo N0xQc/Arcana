@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_nether_spell_scroll",
       "has_caster_rune",
-      "has_fire_charge"
+      "has_fire_charge",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

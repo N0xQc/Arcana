@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_magic_spell_scroll",
       "has_builder_rune",
-      "has_stone_slab"
+      "has_stone_slab",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

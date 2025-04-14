@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_stick",
       "has_paper",
-      "has_echo_shard"
+      "has_echo_shard",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

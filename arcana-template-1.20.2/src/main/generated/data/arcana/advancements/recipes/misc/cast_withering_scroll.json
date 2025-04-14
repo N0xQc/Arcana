@@ -46,10 +46,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_elder_spell_scroll",
       "has_caster_rune",
-      "has_wither_rose"
+      "has_wither_rose",
+      "has_the_recipe"
     ]
   ],
   "rewards": {

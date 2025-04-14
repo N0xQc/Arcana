@@ -16,20 +16,20 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.sigmastr.arcana.Arcana"
+			"net.nox.arcana.Arcana"
 		],"client": [
-			"net.sigmastr.arcana.ArcanaClient"
+			"net.nox.arcana.ArcanaClient"
 		],
 		"fabric-datagen": [
-			"net.sigmastr.arcana.ArcanaDataGenerator"
+			"net.nox.arcana.ArcanaDataGenerator"
 		]
 	},
 	"mixins": [
 		"arcana.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.3",
-		"minecraft": "~1.20.2",
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*"
 	},

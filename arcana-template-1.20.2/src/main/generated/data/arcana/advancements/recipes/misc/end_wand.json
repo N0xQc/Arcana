@@ -34,9 +34,9 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_stick",
-      "has_end_wand_core"
+      "has_end_wand_core",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
